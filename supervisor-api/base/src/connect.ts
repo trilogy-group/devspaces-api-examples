@@ -222,10 +222,18 @@ export async function createGitpodExtensionContext(): Promise<GitpodExtensionCon
 async function main() {
 	const context = await createGitpodExtensionContext();
 	console.log(`URL: ${context!.workspaceContextUrl}`);
-	const owner = JSON.stringify(await context!.owner);
-	console.log(`Owner: ${owner}`);
-	const info = JSON.stringify(context!.info);
-	console.log(`Info: ${info}`);
+//	const owner = JSON.stringify(await context!.owner);
+//	console.log(`Owner: ${owner}`);
+	const workspaceid = context!.info.getWorkspaceId();
+	const instanceid = context!.info.getInstanceId();
+	console.log(`WorkspaceID: ${workspaceid}`);
+	console.log(`InstanceID: ${instanceid}`);
+//	const info = JSON.stringify(context!.info);
+//	console.log(`Info: ${info}`);
+	console.log(`Sending heartbeat for ${instanceid}...`);
+	await context?.gitpod.server.sendHeartBeat({instanceId: instanceid});
+	console.log(`Done`);
+	process.exit(0);
 }
 
 main();
