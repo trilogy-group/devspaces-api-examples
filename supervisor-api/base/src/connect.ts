@@ -56,7 +56,7 @@ export class SupervisorConnection {
 	}
 }
 
-type UsedGitpodFunction = ['getWorkspaces', 'getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'waitForSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
+type UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'waitForSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
 type Union<Tuple extends any[], Union = never> = Tuple[number] | Union;
 export type GitpodConnection = Omit<GitpodServiceImpl<GitpodClient, GitpodServer>, 'server'> & {
 	server: Pick<GitpodServer, Union<UsedGitpodFunction>>;
@@ -139,11 +139,10 @@ export async function createGitpodExtensionContext(): Promise<GitpodExtensionCon
 	const gitpodApi = workspaceInfo.getGitpodApi()!;
 
 	const factory = new JsonRpcProxyFactory<GitpodServer>();
-	const gitpodFunctions: UsedGitpodFunction = ['getWorkspaces', 'getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'waitForSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
+	const gitpodFunctions: UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'waitForSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
 	const gitpodService: GitpodConnection = new GitpodServiceImpl<GitpodClient, GitpodServer>(factory.createProxy()) as any;
 	const gitpodScopes = new Set<string>([
 		'resource:workspace::' + workspaceId + '::get/update',
-		'function:getWorkspaces',
 		'function:accessCodeSyncStorage',
 	]);
 	for (const gitpodFunction of gitpodFunctions) {
@@ -231,12 +230,13 @@ async function main() {
 	console.log(`InstanceID: ${instanceid}`);
 //	const info = JSON.stringify(context!.info);
 //	console.log(`Info: ${info}`);
-	console.log(`Listing all WS of user:`);
+
+/*	console.log(`Listing all WS of user:`);
 	const allws = await context!.gitpod.server.getWorkspaces({});
 	for (var ws of allws) {
 		ws.latestInstance?.id
 		console.log(`ID: ${ws.latestInstance?.id}`);
-	}
+	}*/
 
 	console.log(`Sending heartbeat for ${instanceid}...`);
 	await context?.gitpod.server.sendHeartBeat({instanceId: instanceid});
